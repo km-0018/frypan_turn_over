@@ -489,7 +489,13 @@ document.getElementById('finish-btn').onclick=()=>{
   if(gameActive&&!gameOver) endGame();
 };
 
-document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.addEventListener('touchmove', e => {
+  const target = e.target;
+  if(target.type !== 'range' && !target.closest('#controls')) {
+    e.preventDefault();
+  }
+}, {passive:false});
+
 document.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('resize',resize);
 
