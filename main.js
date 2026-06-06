@@ -96,7 +96,14 @@ function doToss(power){
   food.vy = -(5.0 + power * 4.0); // pixels per frame in normalized space
   food.rotation = 0;
   food.rotSpeed = (Math.random()-0.5) * 25 * (0.5 + power);
-  food.x = W/2 + (Math.random()-0.5)*30;
+  
+  // 角度に基づいて難度を増加：角度が大きいほどx方向のオフセット幅が増える
+  const angleDifficulty = Math.abs(panAngleTarget) / 25; // 0-1
+  const baseOffset = 30;
+  const maxOffset = 80;
+  const offset = baseOffset + angleDifficulty * (maxOffset - baseOffset);
+  food.x = W/2 + (Math.random()-0.5) * offset;
+  
   food.scale = 1;
   cooldown = 0.3;
   basePanAngle = -25;
@@ -107,7 +114,14 @@ function doCatch(){
   if(food.phase !== 'catchable') return;
   food.phase = 'caught';
   combo = Math.min(combo + 1, 10);
-  const pts = 100 * combo;
+  
+  // 難度計算：角度と強さに基づいてボーナス倍率を決定
+  const angleDifficulty = Math.abs(panAngleTarget) / 25; // 0-1: 角度が大きいほど難度高
+  const strengthDiff = Math.abs(tossPower - 0.5) / 0.5; // 0-1: 50%から離れるほど難度高
+  const difficultyBonus = 1.0 + (Math.min(angleDifficulty, 1) + Math.min(strengthDiff, 1)) * 0.75;
+  
+  const basePts = 100 * combo;
+  const pts = Math.floor(basePts * difficultyBonus);
   score += pts;
   successCount++;
   document.getElementById('hval-score').textContent = score;
@@ -115,7 +129,7 @@ function doCatch(){
   cooldown = 0.5;
   basePanAngle = 10;
   spawnParticles('catch');
-  showComboFlash(combo, pts);
+  showComboFlash(combo, pts, difficultyBonus);
 }
 
 function doMiss(){
@@ -128,9 +142,11 @@ function doMiss(){
   cooldown = 0.6;
 }
 
-function showComboFlash(c, pts){
+function showComboFlash(c, pts, difficultyBonus=1.0){
   const el = document.getElementById('combo-flash');
-  const text = c >= 5 ? `🔥 ${c}COMBO!! +${pts}pts` : c >= 3 ? `✨ ${c}コンボ! +${pts}pts` : `+${pts}pts`;
+  const diffText = difficultyBonus > 1.5 ? '🌟' : difficultyBonus > 1.25 ? '⭐' : '';
+  const comboText = c >= 5 ? `🔥 ${c}COMBO!! +${pts}pts` : c >= 3 ? `✨ ${c}コンボ! +${pts}pts` : `+${pts}pts`;
+  const text = diffText ? `${diffText} ${comboText}` : comboText;
   el.textContent = text;
   el.style.fontSize = c >= 5 ? '44px' : '38px';
   el.style.color = c >= 5 ? '#ffd166' : c >= 3 ? '#06d6a0' : '#f0f4f8';
@@ -231,6 +247,15 @@ function update(dt){
   }
   if(tossBtn){
     tossBtn.disabled = !(food.phase === 'idle' && cooldown <= 0 && gameActive && !gameOver);
+  }
+  
+  // 難度表示の更新
+  const angleDiff = Math.abs(panAngleTarget) / 25;
+  const strengthDiff = Math.abs(tossPower - 0.5) / 0.5;
+  const difficulty = Math.min((angleDiff + strengthDiff) / 2, 1.0);
+  const diffDisplay = document.getElementById('hval-difficulty');
+  if(diffDisplay){
+    diffDisplay.textContent = `${Math.round(difficulty * 100)}%`;
   }
 }
 

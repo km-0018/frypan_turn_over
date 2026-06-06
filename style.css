@@ -131,7 +131,7 @@ body{
   width:100%;
   padding:14px 16px 10px;
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr 1fr;
   gap:8px;
   flex-shrink:0;
 }
