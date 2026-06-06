@@ -6,10 +6,10 @@
 <title>🍳 フライパン返し</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Noto+Sans+JP:wght@400;700;900&display=swap');
-​
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 html,body{height:100%;overflow:hidden;-webkit-user-select:none;user-select:none;}
-​
+
 :root{
   --bg:      #0f1923;
   --bg2:     #1a2535;
@@ -22,7 +22,7 @@ html,body{height:100%;overflow:hidden;-webkit-user-select:none;user-select:none;
   --white:   #f0f4f8;
   --muted:   #6b8299;
 }
-​
+
 body{
   font-family:'Noto Sans JP',sans-serif;
   background:var(--bg);
@@ -32,7 +32,7 @@ body{
   justify-content:center;
   height:100%;
 }
-​
+
 #app{
   width:100%;
   max-width:420px;
@@ -40,7 +40,7 @@ body{
   position:relative;
   overflow:hidden;
 }
-​
+
 /* ---- SCREENS ---- */
 .screen{
   position:absolute;
@@ -56,7 +56,7 @@ body{
   transition:opacity .25s;
 }
 .screen.active{opacity:1;pointer-events:all;}
-​
+
 /* ---- TITLE ---- */
 #screen-title{
   background:
@@ -64,7 +64,7 @@ body{
     radial-gradient(ellipse at 75% 80%, rgba(6,214,160,0.1) 0%, transparent 50%),
     var(--bg);
 }
-​
+
 .title-icon{
   font-size:88px;
   line-height:1;
@@ -75,7 +75,7 @@ body{
   0%{transform:rotate(-6deg) scale(1);}
   100%{transform:rotate(6deg) scale(1.06);}
 }
-​
+
 .title-text{
   font-family:'Boogaloo',cursive;
   font-size:42px;
@@ -84,14 +84,14 @@ body{
   text-align:center;
   text-shadow:0 0 40px rgba(255,107,43,0.5);
 }
-​
+
 .title-sub{
   font-size:13px;
   color:var(--muted);
   text-align:center;
   line-height:2;
 }
-​
+
 .how-grid{
   width:100%;
   display:grid;
@@ -108,7 +108,7 @@ body{
 .how-card .hico{font-size:28px;margin-bottom:6px;}
 .how-card .htxt{font-size:11px;color:var(--muted);line-height:1.6;}
 .how-card .hbold{font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;}
-​
+
 .btn-start{
   width:100%;
   padding:18px;
@@ -125,7 +125,7 @@ body{
   transition:transform .1s;
 }
 .btn-start:active{transform:scale(0.97);}
-​
+
 /* ---- GAME ---- */
 #screen-game{
   padding:0;
@@ -133,7 +133,7 @@ body{
   gap:0;
   background:var(--bg);
 }
-​
+
 #hud{
   width:100%;
   padding:14px 16px 10px;
@@ -151,14 +151,14 @@ body{
 }
 .hlabel{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
 .hval{font-size:20px;font-weight:900;line-height:1;}
-​
+
 #cv-wrap{
   flex:1;
   width:100%;
   position:relative;
 }
 #cv{display:block;width:100%;height:100%;}
-​
+
 /* countdown overlay */
 #cd-ov{
   position:absolute;inset:0;
@@ -175,7 +175,7 @@ body{
   color:var(--orange2);
   text-shadow:0 0 50px rgba(255,107,43,0.8);
 }
-​
+
 /* result overlay */
 #res-ov{
   position:absolute;inset:0;
@@ -185,7 +185,7 @@ body{
   z-index:10;padding:30px 24px;gap:14px;
 }
 #res-ov.show{display:flex;}
-​
+
 .res-emoji{font-size:64px;line-height:1;}
 .res-label{font-size:22px;font-weight:900;color:var(--orange2);text-align:center;}
 .res-score{
@@ -195,7 +195,7 @@ body{
   line-height:1;
 }
 .res-detail{font-size:12px;color:var(--muted);text-align:center;line-height:2;}
-​
+
 .btn-retry{
   padding:14px 36px;
   border:2px solid var(--orange);
@@ -208,7 +208,7 @@ body{
   transition:background .15s;
 }
 .btn-retry:active{background:rgba(255,107,43,0.15);}
-​
+
 #finish-wrap{
   width:100%;padding:10px 16px 16px;flex-shrink:0;
 }
@@ -220,7 +220,7 @@ body{
   font-family:'Noto Sans JP',sans-serif;cursor:pointer;
 }
 .btn-finish:active{background:rgba(255,255,255,0.05);}
-​
+
 /* combo flash */
 #combo-flash{
   position:absolute;
@@ -239,13 +239,13 @@ body{
 </head>
 <body>
 <div id="app">
-​
+
   <!-- TITLE -->
   <div class="screen active" id="screen-title">
     <div class="title-icon">🍳</div>
     <div class="title-text">フライパン返し</div>
     <div class="title-sub">スマホを振って食材を宙返り！<br>45秒で何回決められるか競おう</div>
-​
+
     <div class="how-grid">
       <div class="how-card">
         <div class="hico">📱⬆️</div>
@@ -268,10 +268,10 @@ body{
         <div class="htxt">落としたらコンボリセット！慎重に</div>
       </div>
     </div>
-​
+
     <button class="btn-start" id="start-btn">はじめる 🍳</button>
   </div>
-​
+
   <!-- GAME -->
   <div class="screen" id="screen-game">
     <div id="hud">
@@ -288,7 +288,7 @@ body{
         <div class="hval" id="hval-combo" style="color:var(--cyan)">×1</div>
       </div>
     </div>
-​
+
     <div id="cv-wrap">
       <canvas id="cv"></canvas>
       <div id="cd-ov"><div id="cd-num">3</div></div>
@@ -301,12 +301,12 @@ body{
         <button class="btn-retry" id="retry-btn">もう一回！</button>
       </div>
     </div>
-​
+
     <div id="finish-wrap">
       <button class="btn-finish" id="finish-btn">✋ 終了する</button>
     </div>
   </div>
-​
+
 </div>
 <script>
 // =====================
@@ -315,14 +315,14 @@ body{
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 let W, H;
-​
+
 function resize(){
   const wrap = document.getElementById('cv-wrap');
   W = wrap.clientWidth;
   H = wrap.clientHeight;
   cv.width = W; cv.height = H;
 }
-​
+
 // =====================
 // GAME STATE
 // =====================
@@ -335,7 +335,7 @@ let missCount = 0;
 let gameActive = false;
 let gameOver = false;
 let rafId, lastTs;
-​
+
 // Food state machine
 // phases: 'idle' → (toss) → 'flying' → (catch window) → 'catching' → 'caught'/'missed'
 const FOODS = ['🥩','🥦','🍄','🧅','🥕','🍤','🐟','🥚'];
@@ -349,19 +349,19 @@ let food = {
   x: 0,
   scale: 1,
 };
-​
+
 // pan
 let panAngle = 0;   // visual tilt in degrees
-​
+
 // particles
 let particles = [];
-​
+
 // sensor
 let lastAccelZ = 0;
 let accelZ = 0;
 let tossThreshold = 18;   // m/s²-ish delta
 let cooldown = 0;
-​
+
 // =====================
 // SENSOR
 // =====================
@@ -371,7 +371,7 @@ async function requestSensor(){
     try{ await DeviceMotionEvent.requestPermission(); }catch(e){}
   }
 }
-​
+
 window.addEventListener('devicemotion', e => {
   if(!gameActive) return;
   const a = e.accelerationIncludingGravity;
@@ -380,7 +380,7 @@ window.addEventListener('devicemotion', e => {
   const dz = z - lastAccelZ;
   lastAccelZ = z;
   accelZ = dz;
-​
+
   // toss: strong upward jerk (z increases sharply on upward motion)
   if(cooldown <= 0 && food.phase === 'idle' && dz > tossThreshold){
     doToss(Math.min(1, dz / 35));
@@ -393,7 +393,7 @@ window.addEventListener('devicemotion', e => {
     }
   }
 });
-​
+
 // Touch fallback
 let touchY0 = null;
 cv.addEventListener('pointerdown', e => {
@@ -415,7 +415,7 @@ cv.addEventListener('click', e => {
   if(!gameActive) return;
   if(food.phase === 'catchable') doCatch();
 });
-​
+
 // =====================
 // GAME ACTIONS
 // =====================
@@ -432,7 +432,7 @@ function doToss(power){
   panAngle = -25;
   spawnParticles('toss');
 }
-​
+
 function doCatch(){
   if(food.phase !== 'catchable') return;
   food.phase = 'caught';
@@ -447,7 +447,7 @@ function doCatch(){
   spawnParticles('catch');
   showComboFlash(combo, pts);
 }
-​
+
 function doMiss(){
   food.phase = 'missed';
   combo = 1;
@@ -457,7 +457,7 @@ function doMiss(){
   spawnParticles('miss');
   cooldown = 0.6;
 }
-​
+
 function showComboFlash(c, pts){
   const el = document.getElementById('combo-flash');
   const text = c >= 5 ? `🔥 ${c}COMBO!! +${pts}pts` : c >= 3 ? `✨ ${c}コンボ! +${pts}pts` : `+${pts}pts`;
@@ -471,7 +471,7 @@ function showComboFlash(c, pts){
     el.style.opacity = '0';
   }, 600);
 }
-​
+
 // =====================
 // PARTICLES
 // =====================
@@ -491,35 +491,35 @@ function spawnParticles(type){
     });
   }
 }
-​
+
 // =====================
 // UPDATE
 // =====================
 function update(dt){
   cooldown = Math.max(0, cooldown - dt);
-​
+
   // pan spring
   panAngle *= (1 - dt*8);
-​
+
   // food physics
   const pHeight = H * 0.52; // how high food goes at vy peak
-​
+
   if(food.phase === 'flying' || food.phase === 'catchable'){
     food.y += food.vy * dt * 60;
     food.vy += 3.5 * dt; // gravity
     food.rotation += food.rotSpeed * dt;
-​
+
     if(food.y < -pHeight * 0.55){
       // peak reached → now falling = catchable
       food.phase = 'catchable';
     }
-​
+
     if(food.y >= 0 && food.phase === 'catchable'){
       // reached pan level — miss if not caught
       doMiss();
     }
   }
-​
+
   if(food.phase === 'caught'){
     food.y += (0 - food.y) * dt * 10;
     food.rotation += food.rotSpeed * dt * 0.3;
@@ -529,7 +529,7 @@ function update(dt){
       food.y = 0;
     }
   }
-​
+
   if(food.phase === 'missed'){
     food.y += 6 * dt * 60;
     food.rotation += food.rotSpeed * dt;
@@ -538,7 +538,7 @@ function update(dt){
       food.y = 0;
     }
   }
-​
+
   // particles
   particles = particles.filter(p=>{
     p.x += p.vx; p.y += p.vy;
@@ -546,7 +546,7 @@ function update(dt){
     p.life -= dt * 1.6;
     return p.life > 0;
   });
-​
+
   // time
   if(gameActive && !gameOver){
     timeLeft = Math.max(0, timeLeft - dt);
@@ -554,27 +554,27 @@ function update(dt){
     if(timeLeft <= 0) endGame();
   }
 }
-​
+
 // =====================
 // DRAW
 // =====================
 function draw(){
   ctx.clearRect(0,0,W,H);
-​
+
   // bg gradient
   const bg = ctx.createLinearGradient(0,0,0,H);
   bg.addColorStop(0,'#0f1923');
   bg.addColorStop(1,'#0a1118');
   ctx.fillStyle = bg;
   ctx.fillRect(0,0,W,H);
-​
+
   // grid lines (subtle)
   ctx.strokeStyle='rgba(255,255,255,0.03)';
   ctx.lineWidth=1;
   for(let y=0;y<H;y+=40){
     ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
   }
-​
+
   // draw particles
   particles.forEach(p=>{
     ctx.globalAlpha = p.life * 0.9;
@@ -582,31 +582,31 @@ function draw(){
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
   });
   ctx.globalAlpha = 1;
-​
+
   const panCX = W/2;
   const panCY = H * 0.72;
-​
+
   // food in air
   if(food.phase === 'flying' || food.phase === 'catchable' || food.phase === 'missed'){
     const foodY = panCY + food.y * 1;
     ctx.save();
     ctx.translate(food.x, foodY);
     ctx.rotate(food.rotation * Math.PI / 180);
-​
+
     // catchable glow
     if(food.phase === 'catchable'){
       const pulse = 0.5+0.5*Math.sin(Date.now()/120);
       ctx.shadowColor = '#06d6a0';
       ctx.shadowBlur = 20 + pulse*15;
     }
-​
+
     ctx.font = '44px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(food.emoji, 0, 0);
     ctx.shadowBlur = 0;
     ctx.restore();
-​
+
     // catch prompt
     if(food.phase === 'catchable'){
       const pulse = 0.6+0.4*Math.sin(Date.now()/100);
@@ -618,12 +618,12 @@ function draw(){
       ctx.globalAlpha = 1;
     }
   }
-​
+
   // ── PAN ──
   ctx.save();
   ctx.translate(panCX, panCY);
   ctx.rotate(panAngle * Math.PI / 180);
-​
+
   // handle
   ctx.strokeStyle = '#555';
   ctx.lineWidth = 14;
@@ -635,28 +635,28 @@ function draw(){
   ctx.strokeStyle = '#888';
   ctx.lineWidth = 8;
   ctx.stroke();
-​
+
   // pan body shadow
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 18;
   ctx.shadowOffsetY = 8;
-​
+
   // pan body
   const panW = 110, panH = 28;
   ctx.fillStyle = '#2a2a2a';
   ctx.beginPath();
   ctx.ellipse(0, 0, panW, panH, 0, 0, Math.PI*2);
   ctx.fill();
-​
+
   ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-​
+
   // pan rim
   ctx.strokeStyle = '#444';
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.ellipse(0, 0, panW, panH, 0, 0, Math.PI*2);
   ctx.stroke();
-​
+
   // pan inner (hot surface)
   const panGrad = ctx.createRadialGradient(-10,-5,0,0,0,panW*0.85);
   panGrad.addColorStop(0,'#3a2010');
@@ -666,7 +666,7 @@ function draw(){
   ctx.beginPath();
   ctx.ellipse(0, 0, panW-6, panH-6, 0, 0, Math.PI*2);
   ctx.fill();
-​
+
   // food on pan (idle/caught)
   if(food.phase === 'idle' || food.phase === 'caught'){
     ctx.font = '36px sans-serif';
@@ -674,7 +674,7 @@ function draw(){
     ctx.textBaseline = 'middle';
     ctx.fillText(food.emoji, food.y * 0.3, -4);
   }
-​
+
   // heat shimmer
   const shimmer = 0.15 + 0.1*Math.sin(Date.now()/200);
   ctx.strokeStyle = `rgba(255,100,20,${shimmer})`;
@@ -682,12 +682,12 @@ function draw(){
   ctx.beginPath();
   ctx.ellipse(0, 0, panW-8, panH-8, 0, 0, Math.PI*2);
   ctx.stroke();
-​
+
   ctx.restore();
-​
+
   // flame under pan
   drawFlame(panCX, panCY + panH + 14);
-​
+
   // phase instruction at bottom
   if(food.phase === 'idle' && gameActive && !gameOver){
     const pulse = 0.5+0.5*Math.sin(Date.now()/400);
@@ -699,7 +699,7 @@ function draw(){
     ctx.globalAlpha = 1;
   }
 }
-​
+
 function drawFlame(x, y){
   const t = Date.now()/300;
   for(let i=0;i<5;i++){
@@ -715,7 +715,7 @@ function drawFlame(x, y){
     ctx.fill();
   }
 }
-​
+
 // =====================
 // LOOP
 // =====================
@@ -726,7 +726,7 @@ function loop(ts){
   draw();
   rafId = requestAnimationFrame(loop);
 }
-​
+
 // =====================
 // START / END
 // =====================
@@ -734,29 +734,29 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
 }
-​
+
 async function startGame(){
   await requestSensor();
   showScreen('game');
   resize();
-​
+
   score=0; combo=1; successCount=0; missCount=0;
   timeLeft=GAME_SEC; gameOver=false; gameActive=false;
   particles=[]; food.phase='idle'; food.emoji=FOODS[0]; food.y=0;
   panAngle=0; cooldown=0;
-​
+
   document.getElementById('hval-score').textContent='0';
   document.getElementById('hval-time').textContent=GAME_SEC;
   document.getElementById('hval-combo').textContent='×1';
   document.getElementById('res-ov').classList.remove('show');
   document.getElementById('combo-flash').style.opacity='0';
-​
+
   await countdown();
   gameActive=true;
   lastTs=performance.now();
   rafId=requestAnimationFrame(loop);
 }
-​
+
 async function countdown(){
   const ov=document.getElementById('cd-ov');
   const num=document.getElementById('cd-num');
@@ -767,11 +767,11 @@ async function countdown(){
   }
   ov.classList.remove('show');
 }
-​
+
 function endGame(){
   gameOver=true; gameActive=false;
   cancelAnimationFrame(rafId);
-​
+
   const label =
     score>=3000?'👑 神の手！':
     score>=1800?'🔥 プロ級！':
@@ -779,7 +779,7 @@ function endGame(){
     '😅 要練習…';
   const emoji =
     score>=3000?'👑':score>=1800?'🏆':score>=900?'🙂':'😅';
-​
+
   document.getElementById('res-emoji').textContent=emoji;
   document.getElementById('res-label').textContent=label;
   document.getElementById('res-score').textContent=score+'点';
@@ -787,9 +787,9 @@ function endGame(){
     `成功 ${successCount}回 ／ ミス ${missCount}回 ／ 最大コンボ ×${combo}`;
   document.getElementById('res-ov').classList.add('show');
 }
-​
+
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-​
+
 // =====================
 // EVENTS
 // =====================
@@ -798,11 +798,11 @@ document.getElementById('retry-btn').onclick=startGame;
 document.getElementById('finish-btn').onclick=()=>{
   if(gameActive&&!gameOver) endGame();
 };
-​
+
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('resize',resize);
-​
+
 resize();
 </script>
 </body>
