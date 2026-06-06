@@ -1,89 +1,826 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>フライパン返しDX</title>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🍳 ステーキ返し</title>
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
-#hud{padding:10px;background:#222}
-canvas{display:block;margin:auto;background:#18222c;touch-action:none}
-</style></head><body>
-<div id="hud">
-<div>Score: <span id="score">0</span></div>
-<div>Time: <span id="time">45</span></div>
-<div id="cook">🥩 生肉</div>
+@import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+html,body{height:100%;overflow:hidden;-webkit-user-select:none;user-select:none;}
+
+:root{
+  --bg:      #0f1923;
+  --bg2:     #1a2535;
+  --panel:   #1e2d40;
+  --orange:  #ff6b2b;
+  --orange2: #ffaa55;
+  --yellow:  #ffd166;
+  --cyan:    #06d6a0;
+  --red:     #ef476f;
+  --white:   #f0f4f8;
+  --muted:   #6b8299;
+}
+
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+}
+
+#app{
+  width:100%;
+  max-width:420px;
+  height:100dvh;
+  position:relative;
+  overflow:hidden;
+}
+
+/* ---- SCREENS ---- */
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:28px 24px;
+  gap:18px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s;
+}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* ---- TITLE ---- */
+#screen-title{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,107,43,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 80%, rgba(6,214,160,0.1) 0%, transparent 50%),
+    var(--bg);
+}
+
+.title-icon{
+  font-size:88px;
+  line-height:1;
+  filter:drop-shadow(0 0 24px rgba(255,107,43,0.7));
+  animation:sizzle 2s ease-in-out infinite alternate;
+}
+@keyframes sizzle{
+  0%{transform:rotate(-6deg) scale(1);}
+  100%{transform:rotate(6deg) scale(1.06);}
+}
+
+.title-text{
+  font-family:'Boogaloo',cursive;
+  font-size:42px;
+  color:var(--orange2);
+  letter-spacing:2px;
+  text-align:center;
+  text-shadow:0 0 40px rgba(255,107,43,0.5);
+}
+
+.title-sub{
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+  line-height:2;
+}
+
+.how-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.how-card{
+  background:var(--panel);
+  border-radius:14px;
+  padding:14px 12px;
+  text-align:center;
+  border:1px solid rgba(255,107,43,0.2);
+}
+.how-card .hico{font-size:28px;margin-bottom:6px;}
+.how-card .htxt{font-size:11px;color:var(--muted);line-height:1.6;}
+.how-card .hbold{font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;}
+
+.btn-start{
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--orange),var(--orange2));
+  color:#0f1923;
+  font-size:20px;
+  font-weight:900;
+  font-family:'Noto Sans JP',sans-serif;
+  cursor:pointer;
+  letter-spacing:3px;
+  box-shadow:0 6px 28px rgba(255,107,43,0.45);
+  transition:transform .1s;
+}
+.btn-start:active{transform:scale(0.97);}
+
+/* ---- GAME ---- */
+#screen-game{
+  padding:0;
+  justify-content:flex-start;
+  gap:0;
+  background:var(--bg);
+}
+
+#hud{
+  width:100%;
+  padding:14px 16px 10px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  flex-shrink:0;
+}
+.hcard{
+  background:var(--panel);
+  border-radius:12px;
+  padding:10px 6px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.hlabel{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+.hval{font-size:20px;font-weight:900;line-height:1;}
+
+#cv-wrap{
+  flex:1;
+  width:100%;
+  position:relative;
+}
+#cv{display:block;width:100%;height:100%;}
+
+/* countdown overlay */
+#cd-ov{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(15,25,35,0.82);
+  opacity:0;pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#cd-ov.show{opacity:1;}
+#cd-num{
+  font-family:'Boogaloo',cursive;
+  font-size:96px;
+  color:var(--orange2);
+  text-shadow:0 0 50px rgba(255,107,43,0.8);
+}
+
+/* result overlay */
+#res-ov{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:rgba(15,25,35,0.92);
+  z-index:10;padding:30px 24px;gap:14px;
+}
+#res-ov.show{display:flex;}
+
+.res-emoji{font-size:64px;line-height:1;}
+.res-label{font-size:22px;font-weight:900;color:var(--orange2);text-align:center;}
+.res-score{
+  font-family:'Boogaloo',cursive;
+  font-size:72px;color:var(--yellow);
+  text-shadow:0 0 30px rgba(255,209,102,0.6);
+  line-height:1;
+}
+.res-detail{font-size:12px;color:var(--muted);text-align:center;line-height:2;}
+
+.btn-retry{
+  padding:14px 36px;
+  border:2px solid var(--orange);
+  border-radius:14px;
+  background:transparent;
+  color:var(--orange2);
+  font-size:16px;font-weight:700;
+  font-family:'Noto Sans JP',sans-serif;
+  cursor:pointer;
+  transition:background .15s;
+}
+.btn-retry:active{background:rgba(255,107,43,0.15);}
+
+#finish-wrap{
+  width:100%;padding:10px 16px 16px;flex-shrink:0;
+}
+.btn-finish{
+  width:100%;padding:13px;
+  border:1.5px solid rgba(255,255,255,0.2);
+  border-radius:14px;background:transparent;
+  color:var(--muted);font-size:14px;
+  font-family:'Noto Sans JP',sans-serif;cursor:pointer;
+}
+.btn-finish:active{background:rgba(255,255,255,0.05);}
+
+/* combo flash */
+#combo-flash{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:8;
+  font-family:'Boogaloo',cursive;
+  font-size:52px;
+  color:var(--yellow);
+  text-shadow:0 0 20px rgba(255,209,102,0.9);
+  opacity:0;
+  white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TITLE -->
+  <div class="screen active" id="screen-title">
+    <div class="title-icon">🍳</div>
+    <div class="title-text">ステーキ返し</div>
+    <div class="title-sub">スマホを振ってステーキを宙返り！<br>45秒で何回決められるか競おう</div>
+
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="hico">📱⬆️</div>
+        <div class="hbold">振り上げる</div>
+        <div class="htxt">スマホを素早く上に振るとステーキが飛ぶ</div>
+      </div>
+      <div class="how-card">
+        <div class="hico">🫴✨</div>
+        <div class="hbold">キャッチ</div>
+        <div class="htxt">スマホを水平に戻すとキャッチ判定！</div>
+      </div>
+      <div class="how-card">
+        <div class="hico">🔥💥</div>
+        <div class="hbold">コンボ</div>
+        <div class="htxt">連続成功でボーナス点がどんどん増える</div>
+      </div>
+      <div class="how-card">
+        <div class="hico">😱💦</div>
+        <div class="hbold">ミス</div>
+        <div class="htxt">落としたらコンボリセット！慎重に</div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="start-btn">はじめる 🍳</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div id="hud">
+      <div class="hcard">
+        <div class="hlabel">スコア</div>
+        <div class="hval" id="hval-score" style="color:var(--yellow)">0</div>
+      </div>
+      <div class="hcard">
+        <div class="hlabel">残り時間</div>
+        <div class="hval" id="hval-time" style="color:var(--orange)">45</div>
+      </div>
+      <div class="hcard">
+        <div class="hlabel">コンボ</div>
+        <div class="hval" id="hval-combo" style="color:var(--cyan)">×1</div>
+      </div>
+    </div>
+
+    <div id="cv-wrap">
+      <canvas id="cv"></canvas>
+      <div id="cd-ov"><div id="cd-num">3</div></div>
+      <div id="combo-flash"></div>
+      <div id="res-ov">
+        <div class="res-emoji" id="res-emoji">🏆</div>
+        <div class="res-label" id="res-label">神の手！</div>
+        <div class="res-score" id="res-score">0点</div>
+        <div class="res-detail" id="res-detail"></div>
+        <button class="btn-retry" id="retry-btn">もう一回！</button>
+      </div>
+    </div>
+
+    <div id="finish-wrap">
+      <button class="btn-finish" id="finish-btn">✋ 終了する</button>
+    </div>
+  </div>
+
 </div>
-<canvas id="cv" width="400" height="600"></canvas>
 <script>
-const cv=document.getElementById('cv');
-const ctx=cv.getContext('2d');
-const meat=new Image();
-meat.src='./meat.png';
+// =====================
+// CANVAS & IMAGES
+// =====================
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let W, H;
 
-let score=0,time=45,combo=1,cookLevel=0;
-const names=['生肉','レア','ミディアム','ミディアムレア','ウェルダン','完成','焦げ','炭'];
-let food={x:200,y:420,vy:0,flying:false};
-
-function hud(){
- scoreEl.textContent=score;
- cook.textContent='🥩 '+names[cookLevel];
-}
-const scoreEl=document.getElementById('score');
-const cook=document.getElementById('cook');
-
-function drawMeat(x,y){
- if(meat.complete) ctx.drawImage(meat,x-32,y-32,64,64);
- const colors=[null,'rgba(255,200,100,.15)','rgba(180,120,60,.25)','rgba(140,80,40,.35)','rgba(90,50,20,.45)','rgba(60,30,10,.55)','rgba(30,20,20,.7)','rgba(0,0,0,.85)'];
- if(colors[cookLevel]){
-   ctx.fillStyle=colors[cookLevel];
-   ctx.fillRect(x-32,y-32,64,64);
- }
+function resize(){
+  const wrap = document.getElementById('cv-wrap');
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  cv.width = W; cv.height = H;
 }
 
+// Load meat image
+const imgMeat = new Image();
+imgMeat.src = 'image_0.png'; // Make sure this file exists
+
+// =====================
+// GAME STATE
+// =====================
+const GAME_SEC = 45;
+let timeLeft = GAME_SEC;
+let score = 0;
+let combo = 1;
+let successCount = 0;
+let missCount = 0;
+let gameActive = false;
+let gameOver = false;
+let rafId, lastTs;
+
+// Food state machine
+const FOODS = ['steak']; // Array with single element to reuse doToss logic
+let food = {
+  emoji: 'steak', // No longer an emoji, but a key for image
+  phase: 'idle',   // idle | tossed | flying | catchable | caught | missed
+  y: 0,            // 0=pan, 1=peak
+  vy: 0,
+  rotation: 0,
+  rotSpeed: 0,
+  x: 0,
+  scale: 1,
+};
+
+// pan
+let panAngle = 0;   // visual tilt in degrees
+
+// particles
+let particles = [];
+
+// sensor
+let lastAccelZ = 0;
+let accelZ = 0;
+let tossThreshold = 18;   // m/s²-ish delta
+let cooldown = 0;
+
+// =====================
+// SENSOR
+// =====================
+async function requestSensor(){
+  if(typeof DeviceMotionEvent !== 'undefined' &&
+     typeof DeviceMotionEvent.requestPermission === 'function'){
+    try{ await DeviceMotionEvent.requestPermission(); }catch(e){}
+  }
+}
+
+window.addEventListener('devicemotion', e => {
+  if(!gameActive) return;
+  const a = e.accelerationIncludingGravity;
+  if(!a) return;
+  const z = a.z || 0;
+  const dz = z - lastAccelZ;
+  lastAccelZ = z;
+  accelZ = dz;
+
+  // toss: strong upward jerk (z increases sharply on upward motion)
+  if(cooldown <= 0 && food.phase === 'idle' && dz > tossThreshold){
+    doToss(Math.min(1, dz / 35));
+  }
+  // catch: phone returns to horizontal (small z change while food is catchable)
+  if(food.phase === 'catchable'){
+    // gentle horizontal = small |dz|
+    if(Math.abs(dz) < 6){
+      doCatch();
+    }
+  }
+});
+
+// Touch fallback
+let touchY0 = null;
+cv.addEventListener('pointerdown', e => {
+  touchY0 = e.clientY;
+});
+cv.addEventListener('pointerup', e => {
+  if(touchY0 === null) return;
+  const dy = touchY0 - e.clientY; // positive = swipe up
+  touchY0 = null;
+  if(!gameActive) return;
+  if(cooldown <= 0 && food.phase === 'idle' && dy > 40){
+    doToss(Math.min(1, dy / 120));
+  } else if(food.phase === 'catchable' && dy < 20){
+    doCatch();
+  }
+});
+// tap to catch
+cv.addEventListener('click', e => {
+  if(!gameActive) return;
+  if(food.phase === 'catchable') doCatch();
+});
+
+// =====================
+// GAME ACTIONS
+// =====================
+function doToss(power){
+  food.phase = 'flying';
+  food.emoji = 'steak';
+  food.y = 0;
+  // Increased velocity for less 'mossari' feel
+  food.vy = -(5.0 + power * 4.0); // pixels per frame in normalized space
+  food.rotation = 0;
+  food.rotSpeed = (Math.random()-0.5) * 25 * (0.5 + power);
+  food.x = W/2 + (Math.random()-0.5)*30;
+  food.scale = 1;
+  cooldown = 0.3;
+  panAngle = -25;
+  spawnParticles('toss');
+}
+
+function doCatch(){
+  if(food.phase !== 'catchable') return;
+  food.phase = 'caught';
+  combo = Math.min(combo + 1, 10);
+  const pts = 100 * combo;
+  score += pts;
+  successCount++;
+  document.getElementById('hval-score').textContent = score;
+  document.getElementById('hval-combo').textContent = '×'+combo;
+  cooldown = 0.5;
+  panAngle = 10;
+  spawnParticles('catch');
+  showComboFlash(combo, pts);
+}
+
+function doMiss(){
+  food.phase = 'missed';
+  combo = 1;
+  missCount++;
+  document.getElementById('hval-combo').textContent = '×1';
+  panAngle = 35;
+  spawnParticles('miss');
+  cooldown = 0.6;
+}
+
+function showComboFlash(c, pts){
+  const el = document.getElementById('combo-flash');
+  const text = c >= 5 ? `🔥 ${c}COMBO!! +${pts}pts` : c >= 3 ? `✨ ${c}コンボ! +${pts}pts` : `+${pts}pts`;
+  el.textContent = text;
+  el.style.fontSize = c >= 5 ? '44px' : '38px';
+  el.style.color = c >= 5 ? '#ffd166' : c >= 3 ? '#06d6a0' : '#f0f4f8';
+  el.style.opacity = '1';
+  el.style.transition = 'none';
+  setTimeout(()=>{
+    el.style.transition = 'opacity 0.6s';
+    el.style.opacity = '0';
+  }, 600);
+}
+
+// =====================
+// PARTICLES
+// =====================
+function spawnParticles(type){
+  const cx2 = W/2, cy2 = H*0.62;
+  const count = type==='catch'?18:type==='miss'?10:8;
+  for(let i=0;i<count;i++){
+    const ang = Math.random()*Math.PI*2;
+    const spd = 2.5 + Math.random()*4; // Slightly increased speed
+    const col = type==='catch'?`hsl(${40+Math.random()*40},100%,60%)`:
+                type==='miss'?`hsl(${350+Math.random()*20},90%,60%)`:
+                `hsl(${30+Math.random()*30},90%,55%)`;
+    particles.push({
+      x:cx2, y:cy2,
+      vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd - (type==='toss'?3:0), // More upward boost on toss
+      life:1.2, col, r:3+Math.random()*4, // Slightly longer life
+    });
+  }
+}
+
+// =====================
+// UPDATE
+// =====================
+function update(dt){
+  cooldown = Math.max(0, cooldown - dt);
+
+  // pan spring - increased constant for sharper response
+  panAngle *= (1 - dt*20);
+
+  // food physics
+  const pHeight = H * 0.72; // Increased to match new velocities and gravity
+
+  if(food.phase === 'flying' || food.phase === 'catchable'){
+    food.y += food.vy * dt * 60;
+    // Increased gravity for less 'mossari' feel
+    food.vy += 12.0 * dt; 
+    food.rotation += food.rotSpeed * dt;
+
+    if(food.vy > 0){
+      // Peak reached → now falling = catchable
+      food.phase = 'catchable';
+    }
+
+    if(food.y >= 0 && food.phase === 'catchable'){
+      // reached pan level — miss if not caught
+      doMiss();
+    }
+  }
+
+  if(food.phase === 'caught'){
+    food.y += (0 - food.y) * dt * 15; // Increased catch pull
+    food.rotation += food.rotSpeed * dt * 0.3;
+    food.rotSpeed *= 0.85;
+    if(Math.abs(food.y) < 1){
+      food.phase = 'idle';
+      food.y = 0;
+    }
+  }
+
+  if(food.phase === 'missed'){
+    food.y += 10 * dt * 60; // Faster fall
+    food.rotation += food.rotSpeed * dt;
+    if(food.y > H * 0.6){
+      food.phase = 'idle';
+      food.y = 0;
+    }
+  }
+
+  // particles
+  particles = particles.filter(p=>{
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.1; // Slightly more particle gravity
+    p.life -= dt * 1.8;
+    return p.life > 0;
+  });
+
+  // time
+  if(gameActive && !gameOver){
+    timeLeft = Math.max(0, timeLeft - dt);
+    document.getElementById('hval-time').textContent = Math.ceil(timeLeft);
+    if(timeLeft <= 0) endGame();
+  }
+}
+
+// =====================
+// DRAW
+// =====================
 function draw(){
- ctx.clearRect(0,0,400,600);
- ctx.fillStyle='#444';
- ctx.beginPath();
- ctx.ellipse(200,460,90,25,0,0,Math.PI*2);
- ctx.fill();
- drawMeat(food.x,food.y);
+  ctx.clearRect(0,0,W,H);
+
+  // bg gradient
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0f1923');
+  bg.addColorStop(1,'#0a1118');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  // grid lines (subtle)
+  ctx.strokeStyle='rgba(255,255,255,0.03)';
+  ctx.lineWidth=1;
+  for(let y=0;y<H;y+=40){
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+
+  // draw particles
+  particles.forEach(p=>{
+    ctx.globalAlpha = p.life * 0.9;
+    ctx.fillStyle = p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  const panCX = W/2;
+  const panCY = H * 0.72;
+
+  // food in air
+  if(food.phase === 'flying' || food.phase === 'catchable' || food.phase === 'missed'){
+    const foodY = panCY + food.y * 1;
+    ctx.save();
+    ctx.translate(food.x, foodY);
+    ctx.rotate(food.rotation * Math.PI / 180);
+
+    // catchable glow
+    if(food.phase === 'catchable'){
+      const pulse = 0.5+0.5*Math.sin(Date.now()/120);
+      ctx.shadowColor = '#06d6a0';
+      ctx.shadowBlur = 25 + pulse*20; // Increased shadow
+    }
+
+    drawFood(food.emoji,0,0,0);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    // catch prompt
+    if(food.phase === 'catchable'){
+      const pulse = 0.6+0.4*Math.sin(Date.now()/100);
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = '#06d6a0';
+      ctx.font = 'bold 16px "Noto Sans JP"'; // Increased font size
+      ctx.textAlign = 'center';
+      ctx.fillText('タップ or 水平に戻す！', W/2, H*0.15);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ── PAN ──
+  ctx.save();
+  ctx.translate(panCX, panCY);
+  ctx.rotate(panAngle * Math.PI / 180);
+
+  // handle
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 14;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(90, 30);
+  ctx.stroke();
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 8;
+  ctx.stroke();
+
+  // pan body shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 8;
+
+  // pan body
+  const panW = 110, panH = 28;
+  ctx.fillStyle = '#2a2a2a';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, panW, panH, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+  // pan rim
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, panW, panH, 0, 0, Math.PI*2);
+  ctx.stroke();
+
+  // pan inner (hot surface)
+  const panGrad = ctx.createRadialGradient(-10,-5,0,0,0,panW*0.85);
+  panGrad.addColorStop(0,'#3a2010');
+  panGrad.addColorStop(0.6,'#2a1808');
+  panGrad.addColorStop(1,'#1a1008');
+  ctx.fillStyle = panGrad;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, panW-6, panH-6, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // food on pan (idle/caught)
+  if(food.phase === 'idle' || food.phase === 'caught'){
+    drawFood(food.emoji, food.y * 0.3, -4, 0);
+  }
+
+  // heat shimmer
+  const shimmer = 0.15 + 0.1*Math.sin(Date.now()/200);
+  ctx.strokeStyle = `rgba(255,100,20,${shimmer})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, panW-8, panH-8, 0, 0, Math.PI*2);
+  ctx.stroke();
+
+  ctx.restore();
+
+  // flame under pan
+  drawFlame(panCX, panCY + panH + 14);
+
+  // phase instruction at bottom
+  if(food.phase === 'idle' && gameActive && !gameOver){
+    const pulse = 0.5+0.5*Math.sin(Date.now()/400);
+    ctx.globalAlpha = 0.5 + pulse*0.4;
+    ctx.fillStyle = '#ff6b2b';
+    ctx.font = 'bold 13px "Noto Sans JP"';
+    ctx.textAlign = 'center';
+    ctx.fillText('📱 上に振る！', W/2, H*0.92);
+    ctx.globalAlpha = 1;
+  }
 }
 
-function toss(){
- if(!food.flying){food.flying=true;food.vy=-14;}
+
+function drawFood(type, x, y, rot=0){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(rot);
+
+  // Original emoji drawing removed. Now using image_0.png.
+  if (type === 'steak') {
+    // Width is approximately 3 times original, maintaining aspect ratio roughly
+    const drawW = 90;
+    const drawH = 70;
+    // Center image
+    ctx.drawImage(imgMeat, -drawW / 2, -drawH / 2, drawW, drawH);
+  }
+  
+  ctx.restore();
 }
 
-function catchFood(){
- if(food.flying && food.vy>0){
-   score+=100*combo;
-   combo=Math.min(combo+1,10);
-   if(cookLevel<7) cookLevel++;
-   food.flying=false;
-   food.y=420;
-   food.vy=0;
-   hud();
- }
+function drawFlame(x, y){
+  const t = Date.now()/300;
+  for(let i=0;i<5;i++){
+    const off = (i-2)*14;
+    const h = 18+12*Math.sin(t+i*1.3);
+    const grad = ctx.createLinearGradient(x+off, y, x+off, y-h);
+    grad.addColorStop(0,'rgba(255,80,0,0.9)');
+    grad.addColorStop(0.5,'rgba(255,160,0,0.6)');
+    grad.addColorStop(1,'rgba(255,220,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(x+off, y, 5, h/2, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
 }
 
-cv.addEventListener('click',()=>food.flying?catchFood():toss());
-
-function loop(){
- if(food.flying){
-   food.y+=food.vy;
-   food.vy+=0.6;
-   if(food.y>420){
-     food.y=420; food.vy=0; food.flying=false;
-     combo=1;
-     if(cookLevel>0) cookLevel--;
-     hud();
-   }
- }
- draw();
- requestAnimationFrame(loop);
+// =====================
+// LOOP
+// =====================
+function loop(ts){
+  const dt = Math.min((ts-lastTs)/1000, 0.05);
+  lastTs = ts;
+  update(dt);
+  draw();
+  rafId = requestAnimationFrame(loop);
 }
-hud(); loop();
 
-setInterval(()=>{
- time--;
- document.getElementById('time').textContent=time;
-},1000);
-</script></body></html>
+// =====================
+// START / END
+// =====================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+async function startGame(){
+  await requestSensor();
+  showScreen('game');
+  resize();
+
+  score=0; combo=1; successCount=0; missCount=0;
+  timeLeft=GAME_SEC; gameOver=false; gameActive=false;
+  particles=[]; food.phase='idle'; food.emoji='steak'; food.y=0;
+  panAngle=0; cooldown=0;
+
+  document.getElementById('hval-score').textContent='0';
+  document.getElementById('hval-time').textContent=GAME_SEC;
+  document.getElementById('hval-combo').textContent='×1';
+  document.getElementById('res-ov').classList.remove('show');
+  document.getElementById('combo-flash').style.opacity='0';
+
+  await countdown();
+  gameActive=true;
+  lastTs=performance.now();
+  rafId=requestAnimationFrame(loop);
+}
+
+async function countdown(){
+  const ov=document.getElementById('cd-ov');
+  const num=document.getElementById('cd-num');
+  ov.classList.add('show');
+  for(const t of ['3','2','1','🍳']){
+    num.textContent=t;
+    await sleep(700);
+  }
+  ov.classList.remove('show');
+}
+
+function endGame(){
+  gameOver=true; gameActive=false;
+  cancelAnimationFrame(rafId);
+
+  const label =
+    score>=3000?'👑 神の手！':
+    score>=1800?'🔥 プロ級！':
+    score>=900 ?'😊 なかなか！':
+    '😅 要練習…';
+  const emoji =
+    score>=3000?'👑':score>=1800?'🏆':score>=900?'🙂':'😅';
+
+  document.getElementById('res-emoji').textContent=emoji;
+  document.getElementById('res-label').textContent=label;
+  document.getElementById('res-score').textContent=score+'点';
+  document.getElementById('res-detail').textContent=
+    `成功 ${successCount}回 ／ ミス ${missCount}回 ／ 最大コンボ ×${combo}`;
+  document.getElementById('res-ov').classList.add('show');
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// =====================
+// EVENTS
+// =====================
+document.getElementById('start-btn').onclick=startGame;
+document.getElementById('retry-btn').onclick=startGame;
+document.getElementById('finish-btn').onclick=()=>{
+  if(gameActive&&!gameOver) endGame();
+};
+
+document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('resize',resize);
+
+resize();
+</script>
+</body>
+</html>
