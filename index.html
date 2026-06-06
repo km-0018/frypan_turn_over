@@ -338,7 +338,7 @@ let rafId, lastTs;
 
 // Food state machine
 // phases: 'idle' → (toss) → 'flying' → (catch window) → 'catching' → 'caught'/'missed'
-const FOODS = ['🥩','🥦','🍄','🧅','🥕','🍤','🐟','🥚'];
+const FOODS = ['meat','broccoli','mushroom','onion','carrot','shrimp','fish','egg'];
 let food = {
   emoji: '🥩',
   phase: 'idle',   // idle | tossed | flying | catchable | caught | missed
@@ -600,10 +600,7 @@ function draw(){
       ctx.shadowBlur = 20 + pulse*15;
     }
 
-    ctx.font = '44px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(food.emoji, 0, 0);
+    drawFood(food.emoji,0,0,0);
     ctx.shadowBlur = 0;
     ctx.restore();
 
@@ -669,10 +666,7 @@ function draw(){
 
   // food on pan (idle/caught)
   if(food.phase === 'idle' || food.phase === 'caught'){
-    ctx.font = '36px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(food.emoji, food.y * 0.3, -4);
+    drawFood(food.emoji, food.y * 0.3, -4, 0);
   }
 
   // heat shimmer
@@ -698,6 +692,73 @@ function draw(){
     ctx.fillText('📱 上に振る！', W/2, H*0.92);
     ctx.globalAlpha = 1;
   }
+}
+
+
+function drawFood(type, x, y, rot=0){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(rot);
+
+  switch(type){
+    case 'meat':
+      ctx.fillStyle='#b84a4a';
+      ctx.beginPath(); ctx.ellipse(0,0,18,13,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#f2d6d6';
+      ctx.beginPath(); ctx.ellipse(4,0,7,5,0,0,Math.PI*2); ctx.fill();
+      break;
+
+    case 'broccoli':
+      ctx.fillStyle='#2e8b57';
+      ctx.beginPath(); ctx.arc(-8,-4,8,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(0,-8,9,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(8,-4,8,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#6b8e23';
+      ctx.fillRect(-3,0,6,14);
+      break;
+
+    case 'mushroom':
+      ctx.fillStyle='#d8c0a8';
+      ctx.beginPath(); ctx.arc(0,-3,14,Math.PI,0); ctx.fill();
+      ctx.fillStyle='#f0e0d0';
+      ctx.fillRect(-5,-3,10,16);
+      break;
+
+    case 'onion':
+      ctx.strokeStyle='#d8b4ff';
+      ctx.lineWidth=4;
+      ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.stroke();
+      break;
+
+    case 'carrot':
+      ctx.fillStyle='#ff8c42';
+      ctx.beginPath();
+      ctx.moveTo(0,16); ctx.lineTo(-10,-10); ctx.lineTo(10,-10);
+      ctx.closePath(); ctx.fill();
+      break;
+
+    case 'shrimp':
+      ctx.strokeStyle='#ff7f7f';
+      ctx.lineWidth=6;
+      ctx.beginPath(); ctx.arc(0,0,10,0.3,5.4); ctx.stroke();
+      break;
+
+    case 'fish':
+      ctx.fillStyle='#87ceeb';
+      ctx.beginPath(); ctx.ellipse(0,0,16,9,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(14,0); ctx.lineTo(24,-8); ctx.lineTo(24,8);
+      ctx.closePath(); ctx.fill();
+      break;
+
+    case 'egg':
+      ctx.fillStyle='#fff8dc';
+      ctx.beginPath(); ctx.ellipse(0,0,12,16,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#ffcc33';
+      ctx.beginPath(); ctx.arc(0,2,5,0,Math.PI*2); ctx.fill();
+      break;
+  }
+  ctx.restore();
 }
 
 function drawFlame(x, y){
